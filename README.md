@@ -5,7 +5,7 @@ Constraints and logic for gql queries should be done based on restful implementa
    1.1. npm run test-queries  
    1.2. npm run test-mutations    
 2. Limit the complexity of the graphql queries by their depth with [graphql-depth-limit](https://www.npmjs.com/package/graphql-depth-limit) package.  
-   Use value "5" for package.  
+   Use value "5" for the package.  
    2.1. npm run test-rule  
 3. Solve `n+1` graphql problem with [dataloader](https://www.npmjs.com/package/dataloader).  
    You can use only one "findMany" call per loader to consider this task completed.  
