@@ -34,6 +34,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@esbuild-kit/esm-loader": "^2.6.5",
     "@fastify/autoload": "^5.0.0",
     "@fastify/env": "^4.2.0",
     "@fastify/sensible": "^5.0.0",
@@ -72,7 +73,7 @@
     "node-arg": [
       "--no-warnings",
       "--loader",
-      "ts-node/esm"
+      "@esbuild-kit/esm-loader"
     ]
   }
 }
