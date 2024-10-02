@@ -37,7 +37,8 @@ await test('gql-rule', async (t) => {
     });
 
     t.ok(errors.length === 1);
-    const message = errors[0].message as string;
+    const message = errors[0].message;
+    // Error message from graphql-depth-limit package
     t.ok(message.endsWith('exceeds maximum operation depth of 5'));
   });
 });

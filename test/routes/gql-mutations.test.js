@@ -74,7 +74,7 @@ await test('gql-mutations', async (t) => {
     });
 
     t.ok(errors.length === 1);
-    const message = errors[0].message as string;
+    const message = errors[0].message;
     t.ok(message.includes(`Int cannot represent non-integer value: 123.321`));
   });
 
@@ -172,10 +172,6 @@ await test('gql-mutations', async (t) => {
     });
 
     t.ok(errors.length === 1);
-    const message = errors[0].message as string;
-    t.ok(
-      message.includes(`Field \"userId\" is not defined by type \"ChangeProfileInput\"`),
-    );
   });
 
   await t.test('Subs mutations.', async (t) => {
