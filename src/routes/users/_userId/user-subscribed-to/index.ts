@@ -33,20 +33,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     schema: {
       ...subscribeToUserSchema,
       response: {
-        200: userSchema,
+        204: Type.Void(),
       },
     },
-    async handler(req) {
-      return prisma.user.update({
-        where: {
-          id: req.params.userId,
-        },
+    async handler(req, reply) {
+      void reply.code(204);
+      await prisma.subscribersOnAuthors.create({
         data: {
-          userSubscribedTo: {
-            create: {
-              authorId: req.body.authorId,
-            },
-          },
+          subscriberId: req.params.userId,
+          authorId: req.body.authorId,
         },
       });
     },

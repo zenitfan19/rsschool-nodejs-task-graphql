@@ -186,9 +186,7 @@ await test('gql-mutations', async (t) => {
       body: { errors },
     } = await gqlQuery(app, {
       query: `mutation ($userId1: UUID!, $authorId1: UUID!, $userId2: UUID!, $authorId2: UUID!) {
-        subscribeTo(userId: $userId1, authorId: $authorId1) {
-            id
-        }
+        subscribeTo(userId: $userId1, authorId: $authorId1)
         unsubscribeFrom(userId: $userId2, authorId: $authorId2)
     }`,
       variables: {
