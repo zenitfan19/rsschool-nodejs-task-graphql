@@ -47,6 +47,11 @@ const ProfileType = new GraphQLObjectType({
     yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
     userId: { type: new GraphQLNonNull(UUIDType) },
     memberTypeId: { type: new GraphQLNonNull(MemberTypeIdEnum) },
+    memberType: {
+      type: new GraphQLNonNull(MemberType),
+      resolve: (parent, _, context) =>
+        context.prisma.memberType.findUnique({ where: { id: parent.memberTypeId } }),
+    },
   },
 });
 
@@ -85,7 +90,7 @@ const UserType = new GraphQLObjectType({
           },
         }),
     },
-    subscribedTo: {
+    userSubscribedTo: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
       resolve: (parent, _, context) =>
         context.prisma.user.findMany({
