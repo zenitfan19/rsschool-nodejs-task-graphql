@@ -8,6 +8,7 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLEnumType,
+  GraphQLBoolean,
 } from 'graphql';
 import { UUIDType } from './types/uuid.js';
 
@@ -35,6 +36,17 @@ const PostType = new GraphQLObjectType({
     title: { type: new GraphQLNonNull(GraphQLString) },
     content: { type: new GraphQLNonNull(GraphQLString) },
     authorId: { type: new GraphQLNonNull(UUIDType) },
+  },
+});
+
+const ProfileType = new GraphQLObjectType({
+  name: 'Profile',
+  fields: {
+    id: { type: new GraphQLNonNull(UUIDType) },
+    isMale: { type: new GraphQLNonNull(GraphQLBoolean) },
+    yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
+    userId: { type: new GraphQLNonNull(UUIDType) },
+    memberTypeId: { type: new GraphQLNonNull(MemberTypeIdEnum) },
   },
 });
 
@@ -67,6 +79,20 @@ const createQueryType = (prisma: PrismaClient) =>
         },
         resolve: (_, args) =>
           prisma.post.findUnique({
+            where: { id: args.id },
+          }),
+      },
+      profiles: {
+        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ProfileType))),
+        resolve: () => prisma.profile.findMany(),
+      },
+      profile: {
+        type: ProfileType,
+        args: {
+          id: { type: new GraphQLNonNull(UUIDType) },
+        },
+        resolve: (_, args) =>
+          prisma.profile.findUnique({
             where: { id: args.id },
           }),
       },
