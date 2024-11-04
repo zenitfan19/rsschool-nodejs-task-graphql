@@ -210,6 +210,48 @@ const MutationType = new GraphQLObjectType({
           where: { id: args.id },
         }),
     },
+
+    createProfile: {
+      type: new GraphQLNonNull(ProfileType),
+      args: {
+        isMale: { type: new GraphQLNonNull(GraphQLBoolean) },
+        yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
+        memberTypeId: { type: new GraphQLNonNull(MemberTypeIdEnum) },
+        userId: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: (_, args, context) =>
+        context.prisma.profile.create({
+          data: args,
+        }),
+    },
+
+    changeProfile: {
+      type: ProfileType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+        isMale: { type: GraphQLBoolean },
+        yearOfBirth: { type: GraphQLInt },
+        memberTypeId: { type: MemberTypeIdEnum },
+      },
+      resolve: (_, args, context) => {
+        const { id, ...data } = args;
+        return context.prisma.profile.update({
+          where: { id },
+          data,
+        });
+      },
+    },
+
+    deleteProfile: {
+      type: ProfileType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: (_, args, context) =>
+        context.prisma.profile.delete({
+          where: { id: args.id },
+        }),
+    },
   },
 });
 
