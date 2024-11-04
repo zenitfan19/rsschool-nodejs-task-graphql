@@ -106,70 +106,115 @@ const UserType = new GraphQLObjectType({
   }),
 });
 
-const createQueryType = (prisma: PrismaClient) =>
-  new GraphQLObjectType({
-    name: 'Query',
-    fields: {
-      memberTypes: {
-        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(MemberType))),
-        resolve: () => prisma.memberType.findMany(),
+const QueryType = new GraphQLObjectType({
+  name: 'Query',
+  fields: {
+    memberTypes: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(MemberType))),
+      resolve: (_, args, context) => context.prisma.memberType.findMany(),
+    },
+    memberType: {
+      type: MemberType,
+      args: {
+        id: { type: new GraphQLNonNull(MemberTypeIdEnum) },
       },
-      memberType: {
-        type: MemberType,
-        args: {
-          id: { type: new GraphQLNonNull(MemberTypeIdEnum) },
-        },
-        resolve: (_, args) =>
-          prisma.memberType.findUnique({
-            where: { id: args.id },
-          }),
+      resolve: (_, args, context) =>
+        context.prisma.memberType.findUnique({
+          where: { id: args.id },
+        }),
+    },
+    posts: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
+      resolve: (_, args, context) => context.prisma.post.findMany(),
+    },
+    post: {
+      type: PostType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
       },
-      posts: {
-        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))),
-        resolve: () => prisma.post.findMany(),
+      resolve: (_, args, context) =>
+        context.prisma.post.findUnique({
+          where: { id: args.id },
+        }),
+    },
+    profiles: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ProfileType))),
+      resolve: (_, args, context) => context.prisma.profile.findMany(),
+    },
+    profile: {
+      type: ProfileType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
       },
-      post: {
-        type: PostType,
-        args: {
-          id: { type: new GraphQLNonNull(UUIDType) },
-        },
-        resolve: (_, args) =>
-          prisma.post.findUnique({
-            where: { id: args.id },
-          }),
+      resolve: (_, args, context) =>
+        context.prisma.profile.findUnique({
+          where: { id: args.id },
+        }),
+    },
+    users: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
+      resolve: (_, args, context) => context.prisma.user.findMany(),
+    },
+    user: {
+      type: UserType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
       },
-      profiles: {
-        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ProfileType))),
-        resolve: () => prisma.profile.findMany(),
+      resolve: (_, args, context) =>
+        context.prisma.user.findUnique({
+          where: { id: args.id },
+        }),
+    },
+  },
+});
+
+const MutationType = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    createPost: {
+      type: new GraphQLNonNull(PostType),
+      args: {
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        content: { type: new GraphQLNonNull(GraphQLString) },
+        authorId: { type: new GraphQLNonNull(UUIDType) },
       },
-      profile: {
-        type: ProfileType,
-        args: {
-          id: { type: new GraphQLNonNull(UUIDType) },
-        },
-        resolve: (_, args) =>
-          prisma.profile.findUnique({
-            where: { id: args.id },
-          }),
+      resolve: (_, args, context) =>
+        context.prisma.post.create({
+          data: args,
+        }),
+    },
+
+    changePost: {
+      type: PostType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+        title: { type: GraphQLString },
+        content: { type: GraphQLString },
       },
-      users: {
-        type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UserType))),
-        resolve: () => prisma.user.findMany(),
-      },
-      user: {
-        type: UserType,
-        args: {
-          id: { type: new GraphQLNonNull(UUIDType) },
-        },
-        resolve: (_, args) =>
-          prisma.user.findUnique({
-            where: { id: args.id },
-          }),
+      resolve: async (_, args, context) => {
+        const { id, ...data } = args;
+        return context.prisma.post.update({
+          where: { id },
+          data,
+        });
       },
     },
-  });
+
+    deletePost: {
+      type: PostType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: (_, args, context) =>
+        context.prisma.post.delete({
+          where: { id: args.id },
+        }),
+    },
+  },
+});
 
 export const createSchema = (prisma: PrismaClient) =>
   new GraphQLSchema({
-    query: createQueryType(prisma),
+    query: QueryType,
+    mutation: MutationType,
   });
